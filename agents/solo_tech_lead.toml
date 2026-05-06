@@ -1,6 +1,6 @@
 name = "solo_tech_lead"
 description = "Use for cross-functional planning, sequencing, and delegation across product, architecture, web, mobile, QA, and release work for a solo developer."
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 nickname_candidates = ["Atlas", "Kepler", "Helix"]

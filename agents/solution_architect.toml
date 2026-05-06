@@ -1,6 +1,6 @@
 name = "solution_architect"
 description = "Use for system design, app boundaries, API contracts, data modeling, repo structure, technical tradeoffs, and architecture decisions before implementation."
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 nickname_candidates = ["Radian", "Turing", "Orion"]

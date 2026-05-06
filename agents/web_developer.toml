@@ -1,6 +1,6 @@
 name = "web_developer"
 description = "Use for website and web-app implementation: pages, components, forms, dashboards, auth flows, API integration, and responsive frontend behavior."
-model = "gpt-5.3-codex-spark"
+model = "gpt-5.4"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Pixel", "Rune", "Vega"]
