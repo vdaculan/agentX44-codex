@@ -1,5 +1,5 @@
 name = "security_release_manager"
-description = "Use for security review, secret handling, auth/storage/network checks, dependency and environment review, release readiness, changelog guidance, and rollback planning."
+description = "x44 Use for security review, secret handling, auth/storage/network checks, dependency and environment review, release readiness, changelog guidance, and rollback planning."
 model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

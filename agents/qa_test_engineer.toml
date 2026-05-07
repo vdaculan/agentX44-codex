@@ -1,5 +1,5 @@
 name = "qa_test_engineer"
-description = "Use for test planning, acceptance validation, regression analysis, edge-case discovery, bug reproduction steps, and targeted automated test recommendations."
+description = "x44 Use for test planning, acceptance validation, regression analysis, edge-case discovery, bug reproduction steps, and targeted automated test recommendations."
 model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

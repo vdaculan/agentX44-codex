@@ -11,14 +11,16 @@ This file is the operator reference for the `agentX44` agent set.
 ### `product_owner`
 - Primary use: MVP scoping, PRDs, user stories, acceptance criteria, prioritization
 - Model: `gpt-5.4`
-- Sandbox: `read-only`
+- Sandbox: `workspace-write`
 - Best used when: the idea is still fuzzy and needs clear scope before code starts
+- Special behavior: ends with an MVP Markdown plan, asks for missing context, and can save the approved plan into `docs/` for `solution_architect`
 
 ### `solution_architect`
-- Primary use: system design, API boundaries, repo structure, data modeling, technical tradeoffs
+- Primary use: system design, MVP-to-architecture gap checks, API boundaries, repo structure, data modeling, technical tradeoffs
 - Model: `gpt-5.4`
-- Sandbox: `read-only`
+- Sandbox: `workspace-write`
 - Best used when: multiple components need a shared contract or architecture decision
+- Special behavior: reviews the MVP doc in `docs/`, surfaces technical blockers and unresolved decisions, and can save the approved architecture handoff doc into `docs/`
 
 ### `solo_tech_lead`
 - Primary use: sequencing, delegation, risk management, cross-functional planning
@@ -28,13 +30,13 @@ This file is the operator reference for the `agentX44` agent set.
 
 ### `web_developer`
 - Primary use: web implementation for pages, components, forms, dashboards, auth flows, API integration
-- Model: `gpt-5.3-codex-spark`
+- Model: `gpt-5.4`
 - Sandbox: `workspace-write`
 - Best used when: the work is frontend or browser-facing and ready to build
 
 ### `mobile_developer`
 - Primary use: Flutter, Android, iOS implementation, device-aware behavior, navigation, permissions, async flows
-- Model: `gpt-5.3-codex-spark`
+- Model: `gpt-5.4`
 - Sandbox: `workspace-write`
 - Best used when: the task touches mobile UI, app lifecycle, local storage, or device features
 
@@ -67,7 +69,7 @@ For small tasks, skip unnecessary roles. The prompts are already written to favo
 
 - All current agent definitions are plain `.toml` files in the repository root.
 - Each file includes structured metadata plus a long `developer_instructions` block.
-- The planning and review agents are `read-only`.
+- The planning and review agents are mostly `read-only`, except `product_owner` and `solution_architect`, which can persist approved handoff docs in `docs/`.
 - The implementation agents are `workspace-write`.
 
 ## Maintenance Guidance

@@ -14,8 +14,8 @@ Each agent is stored as a standalone `.toml` file with:
 
 | File | Purpose |
 | --- | --- |
-| `product_owner.toml` | Converts ideas into MVP scope, user stories, and acceptance criteria. |
-| `solution_architect.toml` | Defines system boundaries, contracts, data models, and technical tradeoffs. |
+| `product_owner.toml` | Converts ideas into MVP scope, user stories, acceptance criteria, and an approval-ready MVP plan document for handoff. |
+| `solution_architect.toml` | Reviews the approved MVP doc, performs a formal technical gap check, and defines architecture, contracts, and handoff docs. |
 | `solo_tech_lead.toml` | Orchestrates sequencing, delegation, and cross-functional execution for solo builders. |
 | `web_developer.toml` | Implements web pages, components, forms, dashboards, and frontend integration. |
 | `mobile_developer.toml` | Implements Flutter, Android, and iOS features with platform-aware behavior. |
@@ -42,8 +42,8 @@ This separation keeps responsibilities explicit and reduces overlap between requ
 ## Model and Sandbox Profile
 
 - Planning and review agents mostly use `gpt-5.4` with `high` reasoning.
-- Implementation agents use `gpt-5.3-codex-spark` with `medium` reasoning for faster execution.
-- Writer/reviewer roles are configured as `read-only`.
+- Implementation agents use `gpt-5.4` with `medium` reasoning.
+- Most writer/reviewer roles are configured as `read-only`, except `product_owner` and `solution_architect`, which can write approved handoff docs into `docs/`.
 - Builder roles are configured as `workspace-write`.
 
 This makes the repository suitable for an agentic workflow where only implementation agents are expected to edit files directly.
@@ -53,7 +53,7 @@ This makes the repository suitable for an agentic workflow where only implementa
 For a new feature or product slice:
 
 1. Start with `product_owner` to define the smallest buildable scope.
-2. Use `solution_architect` if contracts, data shape, or repo boundaries need clarification.
+2. Use `solution_architect` to review the approved MVP doc from `docs/`, identify technical gaps and blockers, and produce the minimum safe architecture and contracts.
 3. Use `solo_tech_lead` when the work spans multiple surfaces or needs sequencing.
 4. Hand off implementation to `web_developer` and/or `mobile_developer`.
 5. Run `qa_test_engineer` for validation coverage and regression risk.
@@ -77,9 +77,15 @@ I want to build an MVP for a tutor marketplace for parents booking 30-minute rea
 Please define the smallest shippable scope, core user stories, acceptance criteria, and what to defer until later.
 ```
 
+Expected behavior:
+
+- The agent ends with an MVP plan/doc section in Markdown.
+- The agent asks whether anything is missing or whether more project context should be added.
+- After approval, the MVP plan can be saved in `docs/` and used as the reference for `solution_architect`.
+
 ### 2. Turn the MVP scope into a technical shape
 
-Use `solution_architect` once the scope is clear and you need data models, boundaries, or contracts.
+Use `solution_architect` once the scope is clear and you need data models, boundaries, contracts, and a formal implementation-readiness gap check.
 
 Sample prompt:
 
@@ -89,6 +95,13 @@ Based on this MVP: parents can sign up, browse tutors, book a session, and pay.
 Propose the minimum backend modules, data model, API surface, and repo structure for a solo developer.
 Keep it intentionally small.
 ```
+
+Expected behavior:
+
+- The agent reviews the approved MVP doc from `docs/`.
+- The agent performs an MVP-to-architecture gap check before finalizing the design.
+- The agent blocks on major unresolved technical gaps instead of inventing policy silently.
+- After approval, the architecture plan can be saved in `docs/` and used as the reference for `solo_tech_lead`, `web_developer`, and `mobile_developer`.
 
 ### 3. Ask for an execution order before coding
 
@@ -167,9 +180,9 @@ Use a short chain when you want the whole MVP flow from idea to release review.
 
 Sample sequence:
 
-1. `product_owner`: define the smallest shippable MVP.
-2. `solution_architect`: define minimum architecture and contracts.
-3. `solo_tech_lead`: sequence the work and assign ownership.
+1. `product_owner`: define the smallest shippable MVP and save `docs/mvp-plan-<project-or-feature-name>.md`.
+2. `solution_architect`: review that MVP doc, identify technical gaps, define the minimum architecture and contracts, and save `docs/architecture-plan-<project-or-feature-name>.md`.
+3. `solo_tech_lead`: sequence the work using the approved MVP and architecture docs.
 4. `web_developer`: implement the web slice.
 5. `mobile_developer`: implement the mobile slice if needed.
 6. `qa_test_engineer`: validate risk and coverage.

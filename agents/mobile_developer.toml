@@ -1,5 +1,5 @@
 name = "mobile_developer"
-description = "Use for mobile implementation across Flutter, Android Kotlin, and iOS Swift: screens, navigation, state, device features, and API integration."
+description = "x44 Use for mobile implementation across Flutter, Android Kotlin, and iOS Swift: screens, navigation, state, device features, and API integration."
 model = "gpt-5.4"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
