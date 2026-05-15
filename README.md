@@ -1,194 +1,106 @@
 # agentX44
 
-`agentX44` is a lightweight repository of seven specialized Codex subagent definitions for solo developers building web and mobile products.
+`agentX44` is a repository of Codex subagent definitions for solo developers building, validating, and securing web and mobile products.
 
-Each agent is stored as a standalone `.toml` file with:
-- a stable agent `name`
-- a short `description`
-- a preferred `model`
-- a `sandbox_mode`
-- candidate nicknames
-- embedded `developer_instructions` that define role, scope, guardrails, and output shape
+The repository is organized into two agent packs:
 
-## Repository Contents
+- `mvp-agents/` - product, architecture, implementation, QA, and release agents for building MVPs.
+- `security/` - mobile security audit agents for Android, iOS, and mixed mobile repositories.
 
-| File | Purpose |
+Each agent is stored as a standalone `.toml` file with metadata such as `name`, `description`, `model`, `sandbox_mode`, nickname candidates, and embedded `developer_instructions`.
+
+## Repository Structure
+
+| Path | Purpose |
 | --- | --- |
-| `product_owner.toml` | Converts ideas into MVP scope, user stories, acceptance criteria, and an approval-ready MVP plan document for handoff. |
-| `solution_architect.toml` | Reviews the approved MVP doc, performs a formal technical gap check, and defines architecture, contracts, and handoff docs. |
-| `solo_tech_lead.toml` | Orchestrates sequencing, delegation, and cross-functional execution for solo builders. |
-| `web_developer.toml` | Implements web pages, components, forms, dashboards, and frontend integration. |
-| `mobile_developer.toml` | Implements Flutter, Android, and iOS features with platform-aware behavior. |
-| `qa_test_engineer.toml` | Produces test plans, regression analysis, edge cases, and release recommendations. |
-| `security_release_manager.toml` | Reviews security, secrets, auth/storage/network risk, and release readiness. |
+| `mvp-agents/` | Seven agents for moving from product idea to implementation, validation, and release review. |
+| `security/` | One security orchestrator plus ten focused mobile security audit layer agents. |
+| `docs/` | Handoff documents generated or consumed by planning agents, such as MVP plans and architecture plans. |
+| `AGENT.md` | Operator reference for the agent set. |
 
-## Agent Design
+This repository contains agent definitions only. It does not include a custom loader, CLI, package registry, or automated prompt test runner.
 
-The set is intentionally split into three layers:
+## MVP Agent Pack
 
-1. Planning
-   - `product_owner`
-   - `solution_architect`
-   - `solo_tech_lead`
-2. Implementation
-   - `web_developer`
-   - `mobile_developer`
-3. Validation and release
-   - `qa_test_engineer`
-   - `security_release_manager`
+Use `mvp-agents/` when you are defining or building a product feature.
 
-This separation keeps responsibilities explicit and reduces overlap between requirement writing, architecture, implementation, testing, and ship/no-ship review.
+Recommended full workflow:
 
-## Model and Sandbox Profile
+1. `product_owner` - define the smallest shippable MVP scope, user stories, acceptance criteria, assumptions, and open questions.
+2. `solution_architect` - turn the approved MVP plan into architecture, boundaries, data models, contracts, and implementation sequencing.
+3. `solo_tech_lead` - organize execution order, delegation, risks, and definition of done.
+4. `web_developer` and/or `mobile_developer` - implement the decided web or mobile slices.
+5. `qa_test_engineer` - validate behavior, edge cases, regression risk, and test coverage.
+6. `security_release_manager` - review release readiness, secrets, auth, storage, network, dependencies, rollback, and monitoring.
 
-- Planning and review agents mostly use `gpt-5.4` with `high` reasoning.
-- Implementation agents use `gpt-5.4` with `medium` reasoning.
-- Most writer/reviewer roles are configured as `read-only`, except `product_owner` and `solution_architect`, which can write approved handoff docs into `docs/`.
-- Builder roles are configured as `workspace-write`.
-
-This makes the repository suitable for an agentic workflow where only implementation agents are expected to edit files directly.
-
-## Recommended Workflow
-
-For a new feature or product slice:
-
-1. Start with `product_owner` to define the smallest buildable scope.
-2. Use `solution_architect` to review the approved MVP doc from `docs/`, identify technical gaps and blockers, and produce the minimum safe architecture and contracts.
-3. Use `solo_tech_lead` when the work spans multiple surfaces or needs sequencing.
-4. Hand off implementation to `web_developer` and/or `mobile_developer`.
-5. Run `qa_test_engineer` for validation coverage and regression risk.
-6. Finish with `security_release_manager` before release.
-
-For small implementation-only tasks, `web_developer` or `mobile_developer` can be used directly without full orchestration.
-
-## MVP Sample Usage
-
-Below are concrete examples of how to use the subagents for a typical MVP build.
-
-### 1. Scope a new MVP from a rough idea
-
-Use `product_owner` first when the product is still vague.
-
-Sample prompt:
+Example prompt:
 
 ```text
 Use the product_owner subagent.
-I want to build an MVP for a tutor marketplace for parents booking 30-minute reading sessions for kids.
-Please define the smallest shippable scope, core user stories, acceptance criteria, and what to defer until later.
+I want to build an MVP for parents to book reading tutors for children.
+Define the smallest launch scope, user stories, acceptance criteria, and what to defer.
 ```
 
-Expected behavior:
-
-- The agent ends with an MVP plan/doc section in Markdown.
-- The agent asks whether anything is missing or whether more project context should be added.
-- After approval, the MVP plan can be saved in `docs/` and used as the reference for `solution_architect`.
-
-### 2. Turn the MVP scope into a technical shape
-
-Use `solution_architect` once the scope is clear and you need data models, boundaries, contracts, and a formal implementation-readiness gap check.
-
-Sample prompt:
-
-```text
-Use the solution_architect subagent.
-Based on this MVP: parents can sign up, browse tutors, book a session, and pay.
-Propose the minimum backend modules, data model, API surface, and repo structure for a solo developer.
-Keep it intentionally small.
-```
-
-Expected behavior:
-
-- The agent reviews the approved MVP doc from `docs/`.
-- The agent performs an MVP-to-architecture gap check before finalizing the design.
-- The agent blocks on major unresolved technical gaps instead of inventing policy silently.
-- After approval, the architecture plan can be saved in `docs/` and used as the reference for `solo_tech_lead`, `web_developer`, and `mobile_developer`.
-
-### 3. Ask for an execution order before coding
-
-Use `solo_tech_lead` when the work crosses product, backend, web, and mobile concerns.
-
-Sample prompt:
-
-```text
-Use the solo_tech_lead subagent.
-I have an MVP with web signup, tutor search, booking, and a simple parent dashboard.
-Create the recommended execution order, delegation map, major risks, and definition of done.
-Assume I am building this alone and want the fewest moving parts possible.
-```
-
-### 4. Build a single web MVP slice
-
-Use `web_developer` directly when the requirements are already decided.
-
-Sample prompt:
+For narrow tasks, use the relevant specialist directly:
 
 ```text
 Use the web_developer subagent.
-Implement the MVP parent signup flow with:
-- email and password fields
-- validation errors
-- loading and success states
-- redirect to the dashboard after success
-Keep changes localized and consistent with the existing stack.
+Implement the MVP signup form with validation, loading, error, and success states.
 ```
 
-### 5. Build a mobile MVP slice
+See [`mvp-agents/README.md`](mvp-agents/README.md) for the full agent table and usage examples.
 
-Use `mobile_developer` when the feature is mobile-specific or app-lifecycle-aware.
+## Security Agent Pack
 
-Sample prompt:
+Use `security/` when you need a source-and-configuration security audit for Android, iOS, or mixed mobile projects.
+
+Recommended full workflow:
+
+1. `security_orchestrator` - detect the mobile platform, coordinate the L1-L10 audit layers, aggregate findings, and write `SECURITY_AUDIT_REPORT.md`.
+2. Focused layer agents - run a targeted audit when you only need one security area reviewed, such as secrets, auth, dependencies, network, IPC, or logging.
+
+Example full audit prompt:
 
 ```text
-Use the mobile_developer subagent.
-Implement the MVP booking confirmation screen in the mobile app.
-It should show tutor name, time, price, booking status, and a button to return to the dashboard.
-Handle loading, empty, and error states cleanly.
+Use the security_orchestrator subagent.
+Audit this Android/iOS project for mobile security vulnerabilities and write SECURITY_AUDIT_REPORT.md.
 ```
 
-### 6. Validate the MVP before merge
-
-Use `qa_test_engineer` after implementation to get focused coverage and regression thinking.
-
-Sample prompt:
+Example focused audit prompt:
 
 ```text
-Use the qa_test_engineer subagent.
-Review this MVP booking flow and produce:
-- a risk-based test plan
-- critical happy path checks
-- edge cases
-- regression risks
-- any missing automated tests worth adding now
+Use the security_l4_secrets subagent.
+Audit only secrets and build-security risk in this mobile project.
 ```
 
-### 7. Run a release-readiness pass
+See [`security/README.md`](security/README.md) for the audit layers, expected report format, and operating rules.
 
-Use `security_release_manager` before shipping anything that touches auth, payments, secrets, or storage.
+## How To Use The Agents
 
-Sample prompt:
+Reference the desired agent by its `name` from the TOML file in your prompt:
 
 ```text
-Use the security_release_manager subagent.
-Review the MVP for release readiness.
-Focus on auth, secret handling, payment-related risk, storage of personal data, and obvious security gaps.
-Return ship / no-ship guidance with required fixes first.
+Use the <agent_name> subagent.
+<Describe the task, constraints, expected output, and any relevant files or docs.>
 ```
 
-### 8. Full MVP multi-agent chain
+Good prompts usually include:
 
-Use a short chain when you want the whole MVP flow from idea to release review.
+- the product, feature, or repository being worked on
+- the current state of the work
+- the exact output you want
+- constraints such as platform, stack, deadline, or release risk
+- whether the agent should only review or may edit files
 
-Sample sequence:
+Agent sandbox defaults matter:
 
-1. `product_owner`: define the smallest shippable MVP and save `docs/mvp-plan-<project-or-feature-name>.md`.
-2. `solution_architect`: review that MVP doc, identify technical gaps, define the minimum architecture and contracts, and save `docs/architecture-plan-<project-or-feature-name>.md`.
-3. `solo_tech_lead`: sequence the work using the approved MVP and architecture docs.
-4. `web_developer`: implement the web slice.
-5. `mobile_developer`: implement the mobile slice if needed.
-6. `qa_test_engineer`: validate risk and coverage.
-7. `security_release_manager`: run final release review.
+- Planning and implementation agents that need to write handoff docs or code use `workspace-write`.
+- Review and audit agents are usually `read-only`.
+- The security orchestrator can write the final `SECURITY_AUDIT_REPORT.md`, but the layer agents are designed to audit without fixing files.
 
-Sample parent prompt:
+## Common Workflows
+
+### New MVP From A Rough Idea
 
 ```text
 Use the product_owner, solution_architect, and solo_tech_lead subagents first.
@@ -197,39 +109,45 @@ I want the smallest viable launch plan, minimum architecture, and a practical ex
 After that, hand off the first implementation task to web_developer.
 ```
 
-### 9. Single-agent MVP shortcut
+### Implementation-Only Web Task
 
-If the task is already narrow, skip orchestration.
+```text
+Use the web_developer subagent.
+Build the dashboard empty state and loading state for the existing web app.
+Keep the changes localized and consistent with the current UI system.
+```
 
-Examples:
+### Implementation-Only Mobile Task
 
-- `web_developer`: "Build the landing page and waitlist form for the MVP."
-- `mobile_developer`: "Implement the first-run onboarding carousel for the MVP app."
-- `qa_test_engineer`: "Review the signup and booking flows for missing edge-case coverage."
+```text
+Use the mobile_developer subagent.
+Implement the booking confirmation screen in the mobile app.
+Show tutor name, time, price, booking status, and a button back to the dashboard.
+```
 
-## Shared Conventions Across Agents
+### Pre-Release Review
 
-Across the seven files, the prompts consistently emphasize:
+```text
+Use the qa_test_engineer and security_release_manager subagents.
+Review the completed signup and booking flow before release.
+Return release blockers first, then the smallest test and security checklist needed before shipping.
+```
 
-- clear scope boundaries
-- minimal, reviewable changes
+### Mobile Security Audit
+
+```text
+Use the security_orchestrator subagent.
+Run a full source-and-configuration mobile security audit.
+Write SECURITY_AUDIT_REPORT.md with evidence-backed findings, severity, exact files, line numbers, fixes, and references.
+```
+
+## Design Principles
+
+The agent set is designed around:
+
+- narrow responsibilities
+- small, reviewable outputs
 - explicit assumptions
-- maintainability over novelty
 - solo-builder practicality
-- output structures that are easy to hand off between agents
-
-## Current State
-
-This repository contains agent definitions only. It does not currently include:
-
-- runtime code to load these `.toml` files
-- scripts for agent registration or packaging
-- tests for prompt behavior
-- example task transcripts, although the sample prompts above can serve as starter usage patterns
-
-If you want to operationalize this repository further, the next useful additions would be:
-
-- a loader or manifest format for your agent runtime
-- sample prompts showing when to use each agent
-- versioning or changelog notes for prompt revisions
-- evaluation cases for consistency and handoff quality
+- evidence-backed review
+- handoffs that another agent or human can use without needing the full chat history
